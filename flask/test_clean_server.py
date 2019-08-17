@@ -4,6 +4,8 @@ Test file for the clean_server.py server
 
 import unittest
 import requests
+import logging
+import sys
 
 class ServerNotStarted(Exception):
     pass
@@ -13,11 +15,20 @@ class TestServer(unittest.TestCase):
 
     def setUp(self) -> None:
         # make sure the server is running
+        logger = logging.getLogger()
+        logger.setLevel(logging.ERROR)
+        handler = logging.StreamHandler(sys.stdout)
+        log_formatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+        handler.setFormatter(log_formatter)
+        logger.addHandler(handler)
+        logger.info('Logger set up')
         test_url = 'http://127.0.0.1:5000'
         r = requests.get(url=test_url)
+        logger.info('Test server is alive')
 
     def test_create_file(self):
         # push a single item
+        logger = logging.getLogger()
         new_file = {
             'path': 'TEST_PATH',
             'content': 'TEST_CONTENT',
@@ -32,7 +43,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         res = r.json()
         found_line = False
-        print(res)
+        logger.info(res)
         for line in res['files']:
             if line['path'] == new_file['path']:
                 found_line = True
