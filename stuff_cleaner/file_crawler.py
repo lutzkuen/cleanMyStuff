@@ -10,6 +10,8 @@ import sys
 import logging
 import requests
 import hashlib
+import configparser
+import argparse
 
 def md5(fname):
     hash_md5 = hashlib.md5()
@@ -37,6 +39,8 @@ class CrawlerSlave(object):
                 if os.path.isfile(fullname):
                     master.save_file(fullname)
                 else:
+                    if os.path.abspath(fullname) in master.blacklist:
+                        continue
                     slave = CrawlerSlave(fullname, master)
             except Exception as e:
                 print(str(e))
@@ -45,15 +49,17 @@ class CrawlerSlave(object):
 
 class CrawlerMaster(object):
 
-    def __init__(self, directory):
+    def __init__(self, config_file):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
         handler = logging.StreamHandler(sys.stdout)
-        logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-        handler.setFormatter(logFormatter)
+        log_formatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+        handler.setFormatter(log_formatter)
         self.logger.addHandler(handler)
-        self.root = directory
-        self.current = self.root
+        conf = configparser.ConfigParser()
+        conf.read(config_file)
+        self.blacklist = conf.get('file', 'blacklist').split(';')
+        self.root = conf.get('file', 'root')
 
     def save_file(self, filename):
         post_url = 'http://127.0.0.1:5000/v1/add_file'
@@ -73,10 +79,18 @@ class CrawlerMaster(object):
         for file in files:
             fullname = os.path.join(self.root, file)
             if os.path.isdir(fullname):
+                if os.path.abspath(fullname) in self.blacklist:
+                    continue
                 slave = CrawlerSlave(fullname, self)
             else:
                 self.save_file(fullname)
 
 if __name__ == '__main__':
-    cl = CrawlerMaster('../..')
-    cl.crawl_root()
+    parser = argparse.ArgumentParser(description='Please provide a config file containing root directory and blacklist')
+    parser.add_argument('--config',dest='config',help='Path to config file')
+    args = parser.parse_args()
+    if not args.config:
+        parser.print_help()
+    else:
+        cl = CrawlerMaster(args.config)
+        cl.crawl_root()

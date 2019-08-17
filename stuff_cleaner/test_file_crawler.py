@@ -12,12 +12,18 @@ class TestCrawlerSlave(unittest.TestCase):
 
     def setUp(self) -> None:
         self.test_directory = '/tmp/crawler_unittest'
+        self.test_configfile = '/tmp/crawler_test.conf'
+        f = open(self.test_configfile, 'w')
+        f.write('[file]\n')
+        f.write('blacklist: NONE\n')
+        f.write('root: {root}\n'.format(root=self.test_directory))
+        f.close()
         self.test_file = os.path.join(self.test_directory, 'test_file')
         if os.path.isdir(self.test_directory):
             os.system('rm -rf {path}'.format(path=self.test_directory))
         os.mkdir(self.test_directory)
         os.system('touch {testfile}'.format(testfile=self.test_file))
-        self.master = file_crawler.CrawlerMaster(self.test_directory)
+        self.master = file_crawler.CrawlerMaster(self.test_configfile)
 
     def test_init(self):
         url_single = 'http://127.0.0.1:5000/v1/file'
@@ -37,19 +43,25 @@ class TestCrawlerSlave(unittest.TestCase):
 
     def tearDown(self) -> None:
         os.system('rm -rf {path}'.format(path=self.test_directory))
+        os.remove(self.test_configfile)
 
 
 class TestCrawlerMaster(unittest.TestCase):
 
     def setUp(self) -> None:
         self.test_directory = '/tmp/crawler_unittest'
+        self.test_configfile = '/tmp/crawler_test.conf'
+        f = open(self.test_configfile, 'w')
+        f.write('[file]\n')
+        f.write('blacklist: NONE\n')
+        f.write('root: {root}\n'.format(root=self.test_directory))
+        f.close()
         self.test_file = os.path.join(self.test_directory, 'test_file')
         if os.path.isdir(self.test_directory):
             os.system('rm -rf {path}'.format(path=self.test_directory))
         os.mkdir(self.test_directory)
         os.system('touch {testfile}'.format(testfile=self.test_file))
-        self.master = file_crawler.CrawlerMaster(self.test_directory)
-
+        self.master = file_crawler.CrawlerMaster(self.test_configfile)
 
     def test_crawl_root(self):
         self.master.crawl_root()
@@ -70,3 +82,4 @@ class TestCrawlerMaster(unittest.TestCase):
 
     def tearDown(self) -> None:
         os.system('rm -rf {path}'.format(path=self.test_directory))
+        os.remove(self.test_configfile)
