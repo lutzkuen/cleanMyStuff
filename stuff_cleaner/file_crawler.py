@@ -47,7 +47,7 @@ class CrawlerMaster(object):
 
     def __init__(self, directory):
         self.logger = logging.getLogger()
-        self.logger.setLevel(logging.ERROR)
+        self.logger.setLevel(logging.INFO)
         handler = logging.StreamHandler(sys.stdout)
         logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
         handler.setFormatter(logFormatter)
@@ -56,11 +56,11 @@ class CrawlerMaster(object):
         self.current = self.root
 
     def save_file(self, filename):
-        post_url = 'http://127.0.0.1:5000/v1/files'
+        post_url = 'http://127.0.0.1:5000/v1/add_file'
         new_file = {
-            'path': filename,
-            'content': md5(filename),
-            'device': 'HDD'
+            'full_path': os.path.abspath(filename),
+            'content_md5': md5(filename),
+            'record_source': 'HDD_LINUX'
         }
         r = requests.post(url=post_url, json=new_file)
         if r.status_code == 201:
@@ -78,5 +78,5 @@ class CrawlerMaster(object):
                 self.save_file(fullname)
 
 if __name__ == '__main__':
-    cl = CrawlerMaster('..\\..\\..')
+    cl = CrawlerMaster('../..')
     cl.crawl_root()
