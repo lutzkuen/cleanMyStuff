@@ -17,6 +17,8 @@ class TestCrawlerSlave(unittest.TestCase):
         f.write('[file]\n')
         f.write('blacklist: NONE\n')
         f.write('root: {root}\n'.format(root=self.test_directory))
+        f.write('record_source: NONE\n')
+        f.write('server: {server}\n'.format(server='http://127.0.0.1:5000'))
         f.close()
         self.test_file = os.path.join(self.test_directory, 'test_file')
         if os.path.isdir(self.test_directory):
@@ -55,6 +57,8 @@ class TestCrawlerMaster(unittest.TestCase):
         f.write('[file]\n')
         f.write('blacklist: NONE\n')
         f.write('root: {root}\n'.format(root=self.test_directory))
+        f.write('record_source: NONE\n')
+        f.write('server: {server}\n'.format(server='http://127.0.0.1:5000'))
         f.close()
         self.test_file = os.path.join(self.test_directory, 'test_file')
         if os.path.isdir(self.test_directory):

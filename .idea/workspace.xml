@@ -4,6 +4,8 @@
     <list default="true" id="3529d4cd-4d9e-4713-be64-d9c741924559" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/tables.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/tables.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flask/clean_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/flask/clean_server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flask/test_clean_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/flask/test_clean_server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/stuff_cleaner/file_crawler.py" beforeDir="false" afterPath="$PROJECT_DIR$/stuff_cleaner/file_crawler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/stuff_cleaner/test_file_crawler.py" beforeDir="false" afterPath="$PROJECT_DIR$/stuff_cleaner/test_file_crawler.py" afterDir="false" />
     </list>
@@ -66,7 +68,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>

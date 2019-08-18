@@ -55,6 +55,7 @@ def create_file():
         'full_path': request.json['full_path'],
         'record_source': request.json['record_source'],
         'content_md5': request.json['content_md5'],
+        'last_accessed': request.json['last_accessed'],
         'last_seen': datetime.datetime.now()
     }
     F_TABLE.upsert(new_file, ['full_path', 'record_source'])

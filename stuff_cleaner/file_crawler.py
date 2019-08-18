@@ -12,6 +12,13 @@ import requests
 import hashlib
 import configparser
 import argparse
+import time
+import datetime
+
+def last_access(filename):
+    attime = max(os.path.getatime(filename), os.path.getmtime(filename))  # last access in secconds
+    attime = time.localtime(attime)
+    attime = datetime.datetime.fromtimestamp(time.mktime(attime))
 
 def md5(fname):
     hash_md5 = hashlib.md5()
@@ -60,13 +67,26 @@ class CrawlerMaster(object):
         conf.read(config_file)
         self.blacklist = conf.get('file', 'blacklist').split(';')
         self.root = conf.get('file', 'root')
+        self.record_source = conf.get('file', 'record_source')
+        self.server = conf.get('file', 'server')
 
-    def save_file(self, filename):
-        post_url = 'http://127.0.0.1:5000/v1/add_file'
+    def save_file(self, filename, update=False):
+        post_url = self.server + '/v1/add_file'
+        single_url = self.server + '/v1/file'
+        test_file = {
+            'full_path': os.path.abspath(filename),
+            'record_source': self.record_source
+        }
+        r = requests.post(url=single_url, json=test_file)
+        if len(r.json()['files']) > 0 and not update:
+            self.logger.warning(
+                '{path} already in database - skipping'.format(path=filename))
+            return
         new_file = {
             'full_path': os.path.abspath(filename),
             'content_md5': md5(filename),
-            'record_source': 'HDD_LINUX'
+            'last_accessed': last_access(filename),
+            'record_source': self.record_source
         }
         r = requests.post(url=post_url, json=new_file)
         if r.status_code == 201:

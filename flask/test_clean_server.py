@@ -32,7 +32,8 @@ class TestServer(unittest.TestCase):
         new_file = {
             'full_path': 'TEST_PATH',
             'content_md5': 'TEST_CONTENT',
-            'record_source': 'TEST'
+            'record_source': 'TEST',
+            'last_accessed': '2019-03-29'
         }
         url_all = 'http://127.0.0.1:5000/v1/files'
         url_single = 'http://127.0.0.1:5000/v1/file'
