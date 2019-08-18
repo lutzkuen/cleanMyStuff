@@ -23,8 +23,8 @@ class TestServer(unittest.TestCase):
         logger.addHandler(handler)
         logger.info('Logger set up')
         test_url = 'http://127.0.0.1:5000'
-        r = requests.get(url=test_url)
-        logger.info('Test server is alive')
+        with requests.get(url=test_url) as r:
+            logger.info('Test server is alive')
 
     def test_create_file(self):
         # push a single item
@@ -39,34 +39,34 @@ class TestServer(unittest.TestCase):
         url_single = 'http://127.0.0.1:5000/v1/file'
         url_add = 'http://127.0.0.1:5000/v1/add_file'
         url_remove = 'http://127.0.0.1:5000/v1/remove_file'
-        r = requests.post(url=url_add, json=new_file)
-        self.assertEqual(r.status_code, 201)
+        with requests.post(url=url_add, json=new_file) as r:
+            self.assertEqual(r.status_code, 201)
         # check if we get the file back
-        r = requests.get(url=url_all)
-        self.assertEqual(r.status_code, 200)
-        res = r.json()
-        found_line = False
-        logger.info(res)
-        for line in res['files']:
-            if line['full_path'] == new_file['full_path']:
-                found_line = True
-        self.assertTrue(found_line)
-        r = requests.post(url=url_single, json=new_file)
-        print(r.json())
-        self.assertEqual(r.json()['files'][0]['full_path'], new_file['full_path'])
-        self.assertEqual(r.status_code, 200)
-        r = requests.post(url=url_remove, json=new_file)
-        self.assertEqual(r.status_code, 200)
-        self.assertTrue(r.json()['removed'])
+        with requests.get(url=url_all) as r:
+            self.assertEqual(r.status_code, 200)
+            res = r.json()
+            found_line = False
+            logger.info(res)
+            for line in res['files']:
+                if line['full_path'] == new_file['full_path']:
+                    found_line = True
+            self.assertTrue(found_line)
+        with requests.post(url=url_single, json=new_file) as r:
+            print(r.json())
+            self.assertEqual(r.json()['files'][0]['full_path'], new_file['full_path'])
+            self.assertEqual(r.status_code, 200)
+        with requests.post(url=url_remove, json=new_file) as r:
+            self.assertEqual(r.status_code, 200)
+            self.assertTrue(r.json()['removed'])
         # now make sure the line is gone
-        r = requests.get(url=url_all)
-        self.assertEqual(r.status_code, 200)
-        res = r.json()
-        found_line = False
-        for line in res['files']:
-            if line['full_path'] == new_file['full_path']:
-                found_line = True
-        self.assertFalse(found_line)
+        with requests.get(url=url_all) as r:
+            self.assertEqual(r.status_code, 200)
+            res = r.json()
+            found_line = False
+            for line in res['files']:
+                if line['full_path'] == new_file['full_path']:
+                    found_line = True
+            self.assertFalse(found_line)
 
     def test_removal(self):
         del_url = 'http://127.0.0.1:5000/v1/remove_file'
@@ -75,9 +75,9 @@ class TestServer(unittest.TestCase):
             'content_md5': 'TEST_CONTENT',
             'record_source': 'TEST'
         }
-        r = requests.post(url=del_url, json=new_file)
-        self.assertEqual(r.status_code, 200)
-        self.assertFalse(r.json()['removed'])
+        with requests.post(url=del_url, json=new_file) as r:
+            self.assertEqual(r.status_code, 200)
+            self.assertFalse(r.json()['removed'])
 
 
 if __name__ == '__main__':

@@ -70,29 +70,21 @@ class CrawlerMaster(object):
         self.record_source = conf.get('file', 'record_source')
         self.server = conf.get('file', 'server')
 
-    def save_file(self, filename, update=False):
+    def save_file(self, filename):
         post_url = self.server + '/v1/add_file'
-        single_url = self.server + '/v1/file'
-        test_file = {
-            'full_path': os.path.abspath(filename),
-            'record_source': self.record_source
-        }
-        r = requests.post(url=single_url, json=test_file)
-        if len(r.json()['files']) > 0 and not update:
-            self.logger.warning(
-                '{path} already in database - skipping'.format(path=filename))
-            return
         new_file = {
             'full_path': os.path.abspath(filename),
             'content_md5': md5(filename),
             'last_accessed': last_access(filename),
             'record_source': self.record_source
         }
-        r = requests.post(url=post_url, json=new_file)
-        if r.status_code == 201:
-            self.logger.info('Posted {path} to API'.format(path=filename))
-        else:
-            self.logger.warning('Response code {status} while posting {path}'.format(status=r.status_code, path=filename))
+        while True:
+            with requests.post(url=post_url, json=new_file) as r:
+                if r.status_code == 201:
+                    self.logger.info('Posted {path} to API'.format(path=filename))
+                    return
+                else:
+                    self.logger.warning('Response code {status} while posting {path}'.format(status=r.status_code, path=filename))
 
     def crawl_root(self):
         files = os.listdir(self.root)

@@ -34,14 +34,14 @@ class TestCrawlerSlave(unittest.TestCase):
             'full_path': self.test_file
         }
         slave = file_crawler.CrawlerSlave(self.test_directory, self.master)
-        r = requests.post(url=url_single, json=file_id)
-        self.assertEqual(r.json()['files'][0]['full_path'], self.test_file)
-        self.assertEqual(r.json()['files'][0]['content_md5'], file_crawler.md5(self.test_file))
-        self.assertEqual(r.status_code, 200)
+        with  requests.post(url=url_single, json=file_id) as r:
+            self.assertEqual(r.json()['files'][0]['full_path'], self.test_file)
+            self.assertEqual(r.json()['files'][0]['content_md5'], file_crawler.md5(self.test_file))
+            self.assertEqual(r.status_code, 200)
         # delete the file from database
-        r = requests.post(url=url_remove, json=file_id)
-        self.assertEqual(r.status_code, 200)
-        self.assertTrue(r.json()['removed'])
+        with requests.post(url=url_remove, json=file_id) as r:
+            self.assertEqual(r.status_code, 200)
+            self.assertTrue(r.json()['removed'])
 
     def tearDown(self) -> None:
         os.system('rm -rf {path}'.format(path=self.test_directory))
@@ -75,14 +75,14 @@ class TestCrawlerMaster(unittest.TestCase):
             'full_path': self.test_file
         }
         slave = file_crawler.CrawlerSlave(self.test_directory, self.master)
-        r = requests.post(url=url_single, json=file_id)
-        self.assertEqual(r.json()['files'][0]['full_path'], self.test_file)
-        self.assertEqual(r.json()['files'][0]['content_md5'], file_crawler.md5(self.test_file))
-        self.assertEqual(r.status_code, 200)
+        with requests.post(url=url_single, json=file_id) as r:
+            self.assertEqual(r.json()['files'][0]['full_path'], self.test_file)
+            self.assertEqual(r.json()['files'][0]['content_md5'], file_crawler.md5(self.test_file))
+            self.assertEqual(r.status_code, 200)
         # delete the file from database
-        r = requests.post(url=url_remove, json=file_id)
-        self.assertEqual(r.status_code, 200)
-        self.assertTrue(r.json()['removed'])
+        with requests.post(url=url_remove, json=file_id) as r:
+            self.assertEqual(r.status_code, 200)
+            self.assertTrue(r.json()['removed'])
 
     def tearDown(self) -> None:
         os.system('rm -rf {path}'.format(path=self.test_directory))
